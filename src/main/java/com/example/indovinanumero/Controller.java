@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
@@ -13,6 +14,7 @@ public class Controller {
     private final int numMax = 100;
     private int tMax = 10;
     private int nTentativiRimasti;
+    private double tentativiFatti=0;
     private int numSegreto;
     private boolean indovinato = false;
 
@@ -44,6 +46,9 @@ public class Controller {
     private TextField tentativiRimasti;
 
     @FXML
+    private ProgressBar progressBarId;
+
+    @FXML
     void onIndovina(ActionEvent event) {
 
         try {
@@ -51,14 +56,20 @@ public class Controller {
             if(this.nTentativiRimasti > 0 && !this.indovinato){
                 if(this.nTentativiRimasti == 1 && this.numSegreto != Integer.valueOf(this.indovinaNumero.getText())){
                     this.nTentativiRimasti--;
+                    this.tentativiFatti++;
+                    this.progressBarId.setProgress(tentativiFatti/tMax);
                     this.tentativiRimasti.setText(String.valueOf(this.nTentativiRimasti));
                     this.risultatoTxt.setMinSize(300,300);
                     this.risultatoTxt.setText("HAI PERSO!");
                     this.risultatoTxt.appendText("Il numero segreto era: " + this.numSegreto);
+                    this.indovinaBtn.setDisable(true);
+                    this.indovinaNumero.setDisable(true);
                     return;
                 }
                 if(this.numSegreto == Integer.valueOf(this.indovinaNumero.getText())){
                     this.indovinato = true;
+                    this.indovinaBtn.setDisable(true);
+                    this.indovinaNumero.setDisable(true);
                     this.risultatoTxt.setMinSize(300,300);
                     this.risultatoTxt.setText("HAI VINTO!");
                 }else{
@@ -70,8 +81,12 @@ public class Controller {
                 }
                 this.nTentativiRimasti--;
                 this.tentativiRimasti.setText(String.valueOf(this.nTentativiRimasti));
+                this.tentativiFatti++;
+                this.progressBarId.setProgress(tentativiFatti/tMax);
             }else{
                 if(indovinato){
+                    this.indovinaBtn.setDisable(true);
+                    this.indovinaNumero.setDisable(true);
                     this.risultatoTxt.setMinSize(300,300);
                     this.risultatoTxt.setText("HAI VINTO!");
                 }
@@ -86,9 +101,13 @@ public class Controller {
     @FXML
     void onNuovaPartita(ActionEvent event) {
 
+        this.tentativiFatti = 0;
+        this.progressBarId.setProgress(tentativiFatti/tMax);
         this.nTentativiRimasti = tMax;
         this.tentativiRimasti.setText(String.valueOf(this.nTentativiRimasti));
         this.indovinato = false;
+        this.indovinaBtn.setDisable(false);
+        this.indovinaNumero.setDisable(false);
 
         this.numSegreto = (int)(Math.random() * this.numMax)+1;
         this.risultatoTxt.setText("Buona Fortuna!!!");
